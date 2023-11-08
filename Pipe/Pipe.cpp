@@ -1,80 +1,88 @@
 ﻿ 
 
 #include <iostream>
-#include <set>
-#include <string>
 #include <vector>
 #include <algorithm>
 using namespace std;
-
-
-string print(vector<int> vec)
-{
-    string buff;
-    for (auto i : vec)
-        buff += to_string(i);
-    
-    cout << buff << endl;
-    return buff;
-    
-}
-
-
 
 
 
 int main()
 {
      
-    vector<int> pipes{ 600, 708 };//{1005, 1497 };
+    vector<int> pipes {1005, 1497, 900 };
+    vector<int> sizes {200,200,200,200,200,200,180,180,180,180,180,180};
+    vector<int> pipeBuffer;
+    vector<int> sizeBuffer;
+    vector<int> pipeResult;
+    vector<int> sizeResult;
     sort(pipes.begin(), pipes.end());
-    vector<int> sizes{ 180,708 }; //{200,200,200,200,200,200,180,180,180,180,180,180};
     sort(sizes.begin(), sizes.end());
-    int result = 0;
+    int garbageCount = 9000;
     do
     {
-        for (auto pipe : pipes)
-        {
-            cout << pipe << " ";
-        }
-        cout << endl;
         do
         {
-
             auto size = sizes.begin();
             int length = 0;
+            int garbge = 0;
             for (auto pipe : pipes)
             {
+                pipeBuffer.push_back(pipe);
                 while (size != sizes.end())
                 {
                     if (*size + length <= pipe)
                     {
                         length += *size;
+                        sizeBuffer.push_back(*size);
                         size++;
                     }
                     else
                     {
+                        garbge += pipe - length;
                         length = 0;
                         break;
                     }
                 }
+
+                //MINIMIZE LAST PIPE
+                garbge += pipe - length;
+                
+                if (size == sizes.end())
+                {
+                    
+                    break;
+                }
             }
 
-            if ((pipes.back() - length) > result)
+            
+            if (garbge <= garbageCount && length)
             {
-                result = pipes.back() - length;
-                for (auto size : sizes)
-                {
-                    cout << size << " - ";
-                }
-
-                cout << pipes.back() - length << endl;
+                garbageCount = garbge;
+                pipeResult = pipeBuffer;
+                sizeResult = sizeBuffer;
+                pipeBuffer.clear();
+                sizeBuffer.clear();
+            }
+            else
+            {
+                pipeBuffer.clear();
+                sizeBuffer.clear();
             }
 
         } while (next_permutation(sizes.begin(), sizes.end()));
     } while (next_permutation(pipes.begin(), pipes.end()));
 
-    
+    cout << "Pipe sizes ";
+    for (auto pipe : pipeResult)
+        cout << pipe << " ";
+
+    cout << endl;
+
+    cout << "Part sizes ";
+    for (auto size : sizeResult)
+        cout << size << " ";
+
 
 }
 
